@@ -19,29 +19,26 @@
 .Post-body td,
 .Post-body th {
   padding: 6px 8px;
-  border: 1px solid var(--body-bg, @body-bg);
+  border: 1px solid var(--body-bg);
   text-align: left;
 }
 
 .Post-body th {
-  background: var(--primary-color, @primary-color);
-  color: var(--body-bg, @body-bg);
+  background: var(--primary-color);
+  color: var(--body-bg);
   font-weight: bold;
 }
 
 .Post-body tr {
-  background: fade(@primary-color, 20%);
-  background: color-mix(in srgb, var(--primary-color, @primary-color) 20%, transparent);
-  color: var(--text-color, @text-color);
+  background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+  color: var(--text-color);
 }
 
 .Post-body tr:nth-child(even) {
-  background: fade(@primary-color, 10%);
-  background: color-mix(in srgb, var(--primary-color, @primary-color) 10%, transparent);
+  background: color-mix(in srgb, var(--primary-color) 10%, transparent);
 }
 
 .Post-body tr:hover,
 .Post-body tr:hover td {
-  background-color: fade(@primary-color, 30%);
-  background-color: color-mix(in srgb, var(--primary-color, @primary-color) 30%, transparent);
+  background-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
 }
