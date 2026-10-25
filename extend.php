@@ -16,6 +16,7 @@ namespace Sonsuzus\MarkdownTables;
 
 use Flarum\Extend;
 use Sonsuzus\MarkdownTables\Formatter\ConfigurePipeTables;
+use Sonsuzus\MarkdownTables\Formatter\ParseSingleColumnTables;
 
 return [
     (new Extend\Frontend('admin'))
@@ -29,5 +30,6 @@ return [
     new Extend\Locales(__DIR__.'/resources/locale'),
 
     (new Extend\Formatter())
-        ->configure(ConfigurePipeTables::class),
+        ->configure(ConfigurePipeTables::class)
+        ->parse(ParseSingleColumnTables::class),
 ];
