@@ -1,0 +1,56 @@
+{
+  "name": "sonsuzus/flarum-markdown-tables",
+  "description": "Markdown pipe tables support for Flarum 2.x.",
+  "keywords": [
+    "flarum",
+    "flarum-extension",
+    "markdown",
+    "tables",
+    "formatting",
+    "sonsuzus"
+  ],
+  "type": "flarum-extension",
+  "license": "MIT",
+  "homepage": "https://github.com/sonsuzus/flarum-markdown-tables",
+  "support": {
+    "issues": "https://github.com/sonsuzus/flarum-markdown-tables/issues",
+    "source": "https://github.com/sonsuzus/flarum-markdown-tables",
+    "forum": "https://discuss.flarum.org"
+  },
+  "require": {
+    "php": "^8.3",
+    "flarum/core": "^2.0"
+  },
+  "authors": [
+    {
+      "name": "Ufuk Aksoy (sonsuzus)",
+      "homepage": "https://github.com/sonsuzus",
+      "role": "Developer"
+    },
+    {
+      "name": "Alexander Skvortsov",
+      "role": "Original Author"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Sonsuzus\\MarkdownTables\\": "src/"
+    }
+  },
+  "extra": {
+    "flarum-extension": {
+      "title": "Markdown Tables",
+      "category": "formatting",
+      "icon": {
+        "name": "fas fa-table",
+        "backgroundColor": "#6932D1",
+        "color": "#ffffff"
+      },
+      "optional-dependencies": [
+        "askvortsov/flarum-rich-text"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

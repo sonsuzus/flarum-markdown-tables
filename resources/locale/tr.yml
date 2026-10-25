@@ -1,0 +1,16 @@
+sonsuzus-markdown-tables:
+  lib:
+    composer:
+      table_menu:
+        num_cols: "# Sütun"
+        num_rows: "# Satır (başlık dahil)"
+        label_cells: "Hücreleri etiketle?"
+        column: Sütun
+        remove_column: Sütunu kaldır
+        insert_column_before: Öncesine sütun ekle
+        insert_column_after: Sonrasına sütun ekle
+        row: Satır
+        remove_row: Satırı kaldır
+        insert_row_before: Öncesine satır ekle
+        insert_row_after: Sonrasına satır ekle
+      table_tooltip: Tablo

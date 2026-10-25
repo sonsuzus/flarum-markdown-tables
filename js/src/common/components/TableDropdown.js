@@ -1,0 +1,188 @@
+/*
+ * This file is part of sonsuzus/flarum-markdown-tables.
+ *
+ * Copyright (c) 2026 Ufuk Aksoy (sonsuzus).
+ * Copyright (c) 2021 Alexander Skvortsov.
+ *
+ * For detailed copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
+import app from 'flarum/common/app';
+import Button from 'flarum/common/components/Button';
+import Separator from 'flarum/common/components/Separator';
+import Switch from 'flarum/common/components/Switch';
+import listItems from 'flarum/common/helpers/listItems';
+import extractText from 'flarum/common/utils/extractText';
+import Stream from 'flarum/common/utils/Stream';
+import {
+  insertTableColumnAfterCommand,
+  insertTableColumnBeforeCommand,
+  insertTableCommand,
+  insertTableRowBeforeCommand,
+  insertTableRowAfterCommand,
+  inTable,
+  removeColumnCommand,
+  removeRowCommand,
+} from '../proseMirror/commands';
+import getRichText from '../utils/getRichText';
+
+export default function createTableDropdown() {
+  const richText = getRichText();
+  if (!richText || !richText.components || !richText.components.FormDropdown) {
+    return null;
+  }
+
+  const FormDropdown = richText.components.FormDropdown;
+
+  class TableDropdown extends FormDropdown {
+    oninit(vnode) {
+      super.oninit(vnode);
+
+      this.state = this.attrs.state;
+      this.state.addItem(
+        this.attrs.type,
+        (state, dispatch) => this.command(state, dispatch),
+        this.onEditorUpdate.bind(this)
+      );
+
+      this.numCols = Stream(3);
+      this.numRows = Stream(4);
+      this.labelCells = Stream(true);
+    }
+
+    getMenu(items) {
+      if (!this.inTable()) {
+        return super.getMenu(items);
+      }
+
+      const commandsToButtons = (commands) =>
+        commands.map((item) => (
+          <Button onclick={this.click.bind(this, item.command)} onkeydown={this.keydown.bind(this, item.command)}>
+            {app.translator.trans(`sonsuzus-markdown-tables.lib.composer.table_menu.${item.translation}`)}
+          </Button>
+        ));
+
+      const colCommands = [
+        {
+          translation: 'remove_column',
+          command: removeColumnCommand,
+        },
+        {
+          translation: 'insert_column_before',
+          command: insertTableColumnBeforeCommand,
+        },
+        {
+          translation: 'insert_column_after',
+          command: insertTableColumnAfterCommand,
+        },
+      ];
+
+      const rowCommands = [
+        {
+          translation: 'remove_row',
+          command: removeRowCommand,
+        },
+        {
+          translation: 'insert_row_before',
+          command: insertTableRowBeforeCommand,
+        },
+        {
+          translation: 'insert_row_after',
+          command: insertTableRowAfterCommand,
+        },
+      ];
+
+      return (
+        <ul className="Dropdown-menu dropdown-menu TableDropdownMenu">
+          {listItems([...commandsToButtons(colCommands), <Separator />, ...commandsToButtons(rowCommands)])}
+        </ul>
+      );
+    }
+
+    fields() {
+      const items = super.fields();
+
+      items.add(
+        'numCols',
+        <div className="Form-group">
+          <label>{app.translator.trans('sonsuzus-markdown-tables.lib.composer.table_menu.num_cols')}</label>
+          <input
+            className="FormControl"
+            name="numCols"
+            type="number"
+            min="1"
+            placeholder={extractText(app.translator.trans('sonsuzus-markdown-tables.lib.composer.table_menu.num_cols'))}
+            bidi={this.numCols}
+            required
+          />
+        </div>,
+        10
+      );
+
+      items.add(
+        'numRows',
+        <div className="Form-group">
+          <label>{app.translator.trans('sonsuzus-markdown-tables.lib.composer.table_menu.num_rows')}</label>
+          <input
+            className="FormControl"
+            name="numRows"
+            type="number"
+            min="2"
+            placeholder={extractText(app.translator.trans('sonsuzus-markdown-tables.lib.composer.table_menu.num_rows'))}
+            bidi={this.numRows}
+            required
+          />
+        </div>,
+        10
+      );
+
+      items.add(
+        'labelCells',
+        <div className="Form-group">
+          <Switch state={this.labelCells()} onchange={this.labelCells}>
+            {app.translator.trans('sonsuzus-markdown-tables.lib.composer.table_menu.label_cells')}
+          </Switch>
+        </div>,
+        9
+      );
+
+      return items;
+    }
+
+    inTable() {
+      return inTable(this.attrs.state.editorView.state);
+    }
+
+    keydown(command, e) {
+      if (e.key === ' ' || e.key === 'Enter') {
+        this.click(command, e);
+      }
+    }
+
+    click(command, e) {
+      e.preventDefault();
+      this.command = command;
+      return this.state.run(this.attrs.type);
+    }
+
+    insert() {
+      if (!this.inTable()) {
+        this.command = insertTableCommand(
+          parseInt(this.numRows(), 10),
+          parseInt(this.numCols(), 10),
+          this.labelCells()
+        );
+        this.state.run(this.attrs.type);
+      }
+    }
+
+    onEditorUpdate() {
+      this.currInTable = this.inTable();
+      this.active = !!this.currInTable;
+      this.$('.Dropdown-toggle').toggleClass('active', this.active);
+    }
+  }
+
+  return TableDropdown;
+}
