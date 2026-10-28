@@ -25,24 +25,32 @@ class ParseSingleColumnTables
 {
     public function __invoke(Parser $parser, mixed $context, string $text): string
     {
-        // Normalize non-breaking spaces (U+00A0) on pipe-table lines so neither
-        // multi-column nor single-column tables fail when copy-pasted.
-        if (str_contains($text, "|") && str_contains($text, "\u{00A0}")) {
-            $text = (string) preg_replace_callback(
-                '/^[ \t\x{00A0}]*\|.*\|[ \t\x{00A0}]*$/mu',
-                static fn (array $m): string => str_replace("\u{00A0}", ' ', $m[0]),
-                $text
-            );
-        }
-
-        $parser->registerParser(
-            'SingleColumnPipeTables',
-            function (string $rawText) use ($parser): void {
-                $this->parseSingleColumnTables($parser, $rawText);
-            }
+    // Normalize non-breaking spaces (U+00A0) on pipe-table lines.
+    if (str_contains($text, '|') && str_contains($text, "\u{00A0}")) {
+        $normalized = preg_replace_callback(
+            '/^[ \t\x{00A0}]*\|.*\|[ \t\x{00A0}]*$/mu',
+            static fn (array $m): string => str_replace("\u{00A0}", ' ', $m[0]),
+            $text
         );
 
+        if ($normalized !== null) {
+            $text = $normalized;
+        }
+    }
+
+    // Metinde tek sütunlu tablo ayırıcı satırı (| --- |) yoksa hiçbir şey yapma.
+    if (!preg_match('/^[ \t\x{00A0}]*\|[ \t\x{00A0}]*:?-+:?[ \t\x{00A0}]*\|[ \t\x{00A0}]*$/mu', $text)) {
         return $text;
+    }
+
+    $parser->registerParser(
+        'SingleColumnPipeTables',
+        function (string $rawText) use ($parser): void {
+            $this->parseSingleColumnTables($parser, $rawText);
+        }
+    );
+
+    return $text;
     }
 
     private function parseSingleColumnTables(Parser $parser, string $text): void

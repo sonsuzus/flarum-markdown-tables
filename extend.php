@@ -30,6 +30,6 @@ return [
     new Extend\Locales(__DIR__.'/resources/locale'),
 
     (new Extend\Formatter())
-        ->configure(ConfigurePipeTables::class),
-      //  ->parse(ParseSingleColumnTables::class),
+        ->configure(ConfigurePipeTables::class)
+        ->parse(ParseSingleColumnTables::class),
 ];
